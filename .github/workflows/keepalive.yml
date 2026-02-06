@@ -1,0 +1,35 @@
+name: Keepalive Ping
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip && pip install -r requirements.txt
+
+      - name: Run keepalive once
+        env:
+          TARGET_URLS: ${{ secrets.TARGET_URLS }}
+          POST_LOAD_URLS: ${{ secrets.POST_LOAD_URLS }}
+          INTERVAL_SECONDS: ${{ secrets.INTERVAL_SECONDS }}
+          TIMEOUT_SECONDS: ${{ secrets.TIMEOUT_SECONDS }}
+          RETRIES: ${{ secrets.RETRIES }}
+          BACKOFF_SECONDS: ${{ secrets.BACKOFF_SECONDS }}
+          ALERT_CONSECUTIVE_FAILURES: ${{ secrets.ALERT_CONSECUTIVE_FAILURES }}
+          ALERT_LATENCY_MS: ${{ secrets.ALERT_LATENCY_MS }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m keepalive.main --once
