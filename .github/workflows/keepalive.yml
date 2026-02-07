@@ -5,12 +5,19 @@ on:
     - cron: "*/10 * * * *"
   workflow_dispatch:
 
+# Schedule runs from default branch (main) only. If it never runs:
+# 1. Actions → Keepalive Ping → confirm workflow is enabled (not "disabled").
+# 2. Run "Run workflow" once to re-enable after inactivity.
+# 3. Settings → Actions → General → allow "Read and write permissions" if needed.
 jobs:
   keepalive:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Log run time
+        run: echo "Keepalive run started at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
       - name: Setup Python
         uses: actions/setup-python@v5
